@@ -11,41 +11,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Vérification du code source
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Configuration de Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16' # Vérifie que c'est la version compatible avec ton projet
+        node-version: '16'
 
-    # Installation des dépendances du projet
     - name: Install dependencies
       run: npm install
 
-    # Installation des dépendances pour ESLint et React (optionnelle, si tu veux quand même les installer sans les exécuter)
     - name: Install ESLint dependencies
       run: npm install --save-dev eslint @eslint/js eslint-plugin-react @typescript-eslint/eslint-plugin
 
-    # Sauter l'étape de lint (ESLint)
     - name: Skip ESLint
       run: echo "Skipping ESLint step"
 
-    # Sauter l'étape des tests
     - name: Skip Tests
       run: echo "Skipping tests step"
 
-    # Construction de l'image Docker
     - name: Build Docker image
       run: docker build -t gestion-etablissement-backend:${{ github.sha }} .
 
-    # Sauvegarde de l'image Docker pour déploiement
     - name: Save Docker image
       run: docker save gestion-etablissement-backend:${{ github.sha }} > gestion-etablissement-backend.tar
 
-    # Téléversement de l'image Docker comme artefact
     - name: Upload Docker image as artifact
       uses: actions/upload-artifact@v4
       with:
@@ -58,25 +49,20 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-    # Vérification du code source
     - uses: actions/checkout@v3
 
-    # Téléchargement de l'image Docker
     - name: Download Docker image
       uses: actions/download-artifact@v4
       with:
         name: docker-image
 
-    # Chargement de l'image Docker
     - name: Load Docker image
       run: docker load < gestion-etablissement-backend.tar
 
-    # Déploiement sur l'environnement de développement
     - name: Deploy to Dev environment
       run: |
         echo "Déploiement sur l'environnement de développement"
-        # Commandes spécifiques de déploiement pour ton environnement de dev
-        # Par exemple : docker run -d -p 80:80 gestion-etablissement-backend:${{ github.sha }}
+        # docker run -d -p 80:80 gestion-etablissement-backend:${{ github.sha }}
 
   deploy-staging:
     needs: deploy-dev
@@ -84,25 +70,22 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-    # Vérification du code source
     - uses: actions/checkout@v3
 
-    # Configuration de kubectl pour Kubernetes
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
 
-    # Configuration de kubectl pour accéder au cluster Kubernetes
     - name: Configure kubectl
       run: |
-        echo "$KUBECONFIG" > ~/.kube/config
+        mkdir -p ~/.kube/  # Crée le dossier ~/.kube/ s'il n'existe pas
+        echo "$KUBECONFIG" > ~/.kube/config  # Écrit la variable dans le fichier
+        chmod 600 ~/.kube/config  # Sécurise le fichier
 
-    # Déploiement sur l'environnement de staging
     - name: Deploy to Staging environment
       run: |
         echo "Déploiement sur l'environnement de staging (K8s)"
-        # Commandes pour déployer sur Kubernetes, comme :
         # kubectl apply -f k8s/deployment.yaml
         # kubectl apply -f k8s/service.yaml
 
@@ -112,13 +95,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-    # Vérification du code source
     - uses: actions/checkout@v3
 
-    # Déploiement sur l'environnement de production
     - name: Deploy to Production environment
       run: |
         echo "Déploiement sur l'environnement de production"
-        # Commandes spécifiques pour déployer en production, comme :
         # kubectl apply -f production/deployment.yaml
         # kubectl apply -f production/service.yaml
