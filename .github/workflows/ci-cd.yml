@@ -38,7 +38,7 @@ jobs:
       run: docker save gestion-etablissement-backend:${{ github.sha }} > gestion-etablissement-backend.tar
 
     - name: Upload Docker image as artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: docker-image
         path: gestion-etablissement-backend.tar
@@ -52,7 +52,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Download Docker image
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: docker-image
 
