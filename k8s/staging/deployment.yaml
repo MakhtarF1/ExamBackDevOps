@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gestion-etablissement-backend
+  namespace: staging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gestion-etablissement-backend
+  template:
+    metadata:
+      labels:
+        app: gestion-etablissement-backend
+    spec:
+      containers:
+      - name: gestion-etablissement-backend
+        image: ${DOCKER_REGISTRY}/gestion-etablissement-backend:${IMAGE_TAG}
+        ports:
+        - containerPort: 5000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: uri
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: secret
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+
