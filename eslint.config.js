@@ -11,9 +11,12 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node, // Ajoute les variables globales de Node.js
+        structuredClone: "readonly", // Déclare structuredClone comme une fonction disponible
       },
     },
   },
+
+  // Configuration des règles JS
   pluginJs.configs.recommended, // Recommandations de ESLint pour JS
 
   // Configuration des règles TypeScript
@@ -23,7 +26,7 @@ export default [
     },
     rules: {
       "@typescript-eslint/explicit-module-boundary-types": "off", // Exemples de règles spécifiques pour TypeScript
-      "@typescript-eslint/no-explicit-any": "off", // Désactive les règles concernant le type `any`
+      "@typescript-eslint/no-explicit-any": "off", // Désactive la règle pour l'utilisation de `any`
     },
   },
 
@@ -33,22 +36,15 @@ export default [
       react: pluginReact,
     },
     rules: {
-      "react/jsx-uses-react": "off", // Exemple de règle personnalisée pour React
-      "react/jsx-uses-vars": "off",
+      "react/jsx-uses-react": "off", // Désactive cette règle (si tu utilises React 17 ou supérieur)
+      "react/jsx-uses-vars": "off", // Désactive cette règle pour éviter l'erreur "variable 'X' is defined but never used"
     },
   },
 
-  // Suppression de la règle `constructor-super` qui peut poser problème dans certaines configurations
+  // Définir des règles personnalisées
   {
     rules: {
-      "constructor-super": "off", // Désactive cette règle spécifique
-    },
-  },
-
-  // Ajouter un warning pour les méthodes "no-unused-vars" afin de ne pas bloquer la compilation mais d'informer des variables inutilisées
-  {
-    rules: {
-      "no-unused-vars": "warn", // Avis sur les variables inutilisées
+      "constructor-super": "off", // Désactive la règle constructor-super
     },
   },
 ];
