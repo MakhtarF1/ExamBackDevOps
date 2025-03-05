@@ -7,36 +7,41 @@ on:
     branches: [ main ]
 
 jobs:
-
   build-and-lint:
     runs-on: ubuntu-latest
 
     steps:
+    # Vérification du code source
     - uses: actions/checkout@v3
 
+    # Configuration de Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '16'
         cache: 'npm'
 
+    # Installation des dépendances du projet
     - name: Install dependencies
       run: npm install
 
+    # Installation des dépendances pour ESLint
     - name: Install ESLint dependencies
       run: npm install --save-dev eslint @eslint/js typescript-eslint eslint-plugin-react
 
+    # Linter le code avec ESLint
     - name: Lint code
       run: npx eslint .
 
-    # Docker build
+    # Construction de l'image Docker
     - name: Build Docker image
       run: docker build -t gestion-etablissement-backend:${{ github.sha }} .
 
-    # Sauvegarder l'image pour le déploiement
+    # Sauvegarder l'image Docker pour déploiement
     - name: Save Docker image
       run: docker save gestion-etablissement-backend:${{ github.sha }} > gestion-etablissement-backend.tar
 
+    # Téléverser l'image Docker comme artefact
     - name: Upload Docker image as artifact
       uses: actions/upload-artifact@v4
       with:
@@ -49,20 +54,24 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
+    # Vérification du code source
     - uses: actions/checkout@v3
 
+    # Téléchargement de l'image Docker
     - name: Download Docker image
       uses: actions/download-artifact@v4
       with:
         name: docker-image
 
+    # Chargement de l'image Docker
     - name: Load Docker image
       run: docker load < gestion-etablissement-backend.tar
 
+    # Déploiement sur l'environnement de développement
     - name: Deploy to Dev environment
       run: |
         echo "Déploiement sur l'environnement de développement"
-        # Ici, vous ajouteriez les commandes pour déployer sur votre environnement de développement
+        # Ajouter ici les commandes de déploiement sur l'environnement de développement
 
   deploy-staging:
     needs: deploy-dev
@@ -70,17 +79,21 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
+    # Vérification du code source
     - uses: actions/checkout@v3
 
+    # Configuration de kubectl pour Kubernetes
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
 
+    # Configuration de kubectl pour accéder au cluster Kubernetes
     - name: Configure kubectl
       run: |
         echo "Configuration de kubectl pour accéder au cluster Kubernetes"
 
+    # Déploiement sur l'environnement de staging
     - name: Deploy to Staging environment
       run: |
         echo "Déploiement sur l'environnement de staging (K8s)"
@@ -91,8 +104,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
+    # Vérification du code source
     - uses: actions/checkout@v3
 
+    # Déploiement sur l'environnement de production
     - name: Deploy to Production environment
       run: |
         echo "Déploiement sur l'environnement de production"
