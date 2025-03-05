@@ -23,6 +23,7 @@ export default [
     },
     rules: {
       "@typescript-eslint/explicit-module-boundary-types": "off", // Exemples de règles spécifiques pour TypeScript
+      "@typescript-eslint/no-explicit-any": "off", // Désactive les règles concernant le type `any`
     },
   },
 
@@ -37,10 +38,17 @@ export default [
     },
   },
 
-  // Définir des règles personnalisées
+  // Suppression de la règle `constructor-super` qui peut poser problème dans certaines configurations
   {
     rules: {
-      "constructor-super": "off", // Désactive la règle constructor-super
+      "constructor-super": "off", // Désactive cette règle spécifique
+    },
+  },
+
+  // Ajouter un warning pour les méthodes "no-unused-vars" afin de ne pas bloquer la compilation mais d'informer des variables inutilisées
+  {
+    rules: {
+      "no-unused-vars": "warn", // Avis sur les variables inutilisées
     },
   },
 ];
