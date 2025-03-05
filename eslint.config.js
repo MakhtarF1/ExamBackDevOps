@@ -40,11 +40,4 @@ export default [
       "react/jsx-uses-vars": "off", // Désactive cette règle pour éviter l'erreur "variable 'X' is defined but never used"
     },
   },
-
-  // Définir des règles personnalisées
-  {
-    rules: {
-      "constructor-super": "off", // Désactive la règle constructor-super
-    },
-  },
 ];
