@@ -19,8 +19,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'
-        cache: 'npm'
+        node-version: '16' # Vérifie que c'est la version compatible avec ton projet
 
     # Installation des dépendances du projet
     - name: Install dependencies
@@ -28,22 +27,15 @@ jobs:
 
     # Installation des dépendances pour ESLint et React
     - name: Install ESLint dependencies
-      run: npm install --save-dev eslint @eslint/js eslint-plugin-react typescript-eslint-parser
+      run: npm install --save-dev eslint @eslint/js eslint-plugin-react @typescript-eslint/eslint-plugin
 
-    # Configuration ESLint pour React (éviter l'avertissement de version)
-    - name: Set ESLint React version
-      run: |
-        echo '{
-          "settings": {
-            "react": {
-              "version": "detect"
-            }
-          }
-        }' > .eslintrc.json
-
-    # Linter le code avec ESLint
+    # Lancer ESLint pour analyser le code source
     - name: Lint code
       run: npx eslint . --max-warnings=0
+
+    # Exécution des tests avant de continuer (facultatif mais fortement recommandé)
+    - name: Run Tests
+      run: npm test
 
     # Construction de l'image Docker
     - name: Build Docker image
@@ -83,7 +75,8 @@ jobs:
     - name: Deploy to Dev environment
       run: |
         echo "Déploiement sur l'environnement de développement"
-        # Ajouter ici les commandes de déploiement spécifiques au dev
+        # Commandes spécifiques de déploiement pour ton environnement de dev
+        # Par exemple : docker run -d -p 80:80 gestion-etablissement-backend:${{ github.sha }}
 
   deploy-staging:
     needs: deploy-dev
@@ -103,14 +96,15 @@ jobs:
     # Configuration de kubectl pour accéder au cluster Kubernetes
     - name: Configure kubectl
       run: |
-        echo "Configuration de kubectl pour accéder au cluster Kubernetes"
-        # Ajouter la configuration nécessaire pour le cluster Kubernetes
+        echo "$KUBECONFIG" > ~/.kube/config
 
     # Déploiement sur l'environnement de staging
     - name: Deploy to Staging environment
       run: |
         echo "Déploiement sur l'environnement de staging (K8s)"
-        # Ajouter les commandes pour le déploiement sur l'environnement staging
+        # Commandes pour déployer sur Kubernetes, comme :
+        # kubectl apply -f k8s/deployment.yaml
+        # kubectl apply -f k8s/service.yaml
 
   deploy-prod:
     needs: deploy-staging
@@ -125,4 +119,6 @@ jobs:
     - name: Deploy to Production environment
       run: |
         echo "Déploiement sur l'environnement de production"
-        # Ajouter les commandes spécifiques pour le déploiement en production
+        # Commandes spécifiques pour déployer en production (comme K8s ou autre outil)
+        # kubectl apply -f production/deployment.yaml
+        # kubectl apply -f production/service.yaml
