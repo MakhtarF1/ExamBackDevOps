@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build-and-test:
+  build-and-lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,11 +23,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # - name: Run tests
-    #   run: npm test
+    - name: Install ESLint dependencies
+      run: npm install --save-dev eslint @eslint/js typescript-eslint eslint-plugin-react
 
     - name: Lint code
-      run: npm run lint
+      run: npx eslint .
 
     # Docker build
     - name: Build Docker image
@@ -44,7 +44,7 @@ jobs:
         path: gestion-etablissement-backend.tar
 
   deploy-dev:
-    needs: build-and-test
+    needs: build-and-lint
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
