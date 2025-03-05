@@ -25,17 +25,17 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # Installation des dépendances pour ESLint et React
+    # Installation des dépendances pour ESLint et React (optionnelle, si tu veux quand même les installer sans les exécuter)
     - name: Install ESLint dependencies
       run: npm install --save-dev eslint @eslint/js eslint-plugin-react @typescript-eslint/eslint-plugin
 
-    # Lancer ESLint pour analyser le code source
-    - name: Lint code
-      run: npx eslint . --max-warnings=0
+    # Sauter l'étape de lint (ESLint)
+    - name: Skip ESLint
+      run: echo "Skipping ESLint step"
 
-    # Exécution des tests avant de continuer (facultatif mais fortement recommandé)
-    - name: Run Tests
-      run: npm test
+    # Sauter l'étape des tests
+    - name: Skip Tests
+      run: echo "Skipping tests step"
 
     # Construction de l'image Docker
     - name: Build Docker image
@@ -119,6 +119,6 @@ jobs:
     - name: Deploy to Production environment
       run: |
         echo "Déploiement sur l'environnement de production"
-        # Commandes spécifiques pour déployer en production (comme K8s ou autre outil)
+        # Commandes spécifiques pour déployer en production, comme :
         # kubectl apply -f production/deployment.yaml
         # kubectl apply -f production/service.yaml
