@@ -37,7 +37,7 @@ jobs:
       run: docker save gestion-etablissement-backend:${{ github.sha }} > gestion-etablissement-backend.tar
 
     - name: Upload Docker image as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
         name: docker-image
         path: gestion-etablissement-backend.tar
@@ -51,7 +51,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Download Docker image
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v2
       with:
         name: docker-image
 
@@ -62,8 +62,6 @@ jobs:
       run: |
         echo "Déploiement sur l'environnement de développement"
         # Ici, vous ajouteriez les commandes pour déployer sur votre environnement de développement
-        # Par exemple, avec Docker Compose:
-        # docker-compose -f docker-compose.dev.yml up -d
 
   deploy-staging:
     needs: deploy-dev
@@ -81,15 +79,10 @@ jobs:
     - name: Configure kubectl
       run: |
         echo "Configuration de kubectl pour accéder au cluster Kubernetes"
-        # Ici, vous configureriez kubectl pour accéder à votre cluster K8s
-        # Par exemple:
-        # aws eks update-kubeconfig --name mon-cluster --region eu-west-1
 
     - name: Deploy to Staging environment
       run: |
         echo "Déploiement sur l'environnement de staging (K8s)"
-        # Ici, vous appliqueriez vos manifestes Kubernetes
-        # kubectl apply -f k8s/staging/
 
   deploy-prod:
     needs: deploy-staging
@@ -102,7 +95,3 @@ jobs:
     - name: Deploy to Production environment
       run: |
         echo "Déploiement sur l'environnement de production"
-        # Ici, vous déploieriez sur votre serveur cloud de production
-        # Par exemple avec SSH:
-        # ssh user@production-server 'docker pull monregistry/gestion-etablissement-backend:latest && docker-compose up -d'
-
