@@ -7,6 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
+
   build-and-test:
     runs-on: ubuntu-latest
 
@@ -37,7 +38,7 @@ jobs:
       run: docker save gestion-etablissement-backend:${{ github.sha }} > gestion-etablissement-backend.tar
 
     - name: Upload Docker image as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
         name: docker-image
         path: gestion-etablissement-backend.tar
