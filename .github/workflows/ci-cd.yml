@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-lint:
@@ -12,7 +12,8 @@ jobs:
 
     steps:
     # Vérification du code source
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     # Configuration de Node.js
     - name: Set up Node.js
@@ -25,23 +26,34 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # Installation des dépendances pour ESLint
+    # Installation des dépendances pour ESLint et React
     - name: Install ESLint dependencies
-      run: npm install --save-dev eslint @eslint/js typescript-eslint eslint-plugin-react
+      run: npm install --save-dev eslint @eslint/js eslint-plugin-react typescript-eslint-parser
+
+    # Configuration ESLint pour React (éviter l'avertissement de version)
+    - name: Set ESLint React version
+      run: |
+        echo '{
+          "settings": {
+            "react": {
+              "version": "detect"
+            }
+          }
+        }' > .eslintrc.json
 
     # Linter le code avec ESLint
     - name: Lint code
-      run: npx eslint .
+      run: npx eslint . --max-warnings=0
 
     # Construction de l'image Docker
     - name: Build Docker image
       run: docker build -t gestion-etablissement-backend:${{ github.sha }} .
 
-    # Sauvegarder l'image Docker pour déploiement
+    # Sauvegarde de l'image Docker pour déploiement
     - name: Save Docker image
       run: docker save gestion-etablissement-backend:${{ github.sha }} > gestion-etablissement-backend.tar
 
-    # Téléverser l'image Docker comme artefact
+    # Téléversement de l'image Docker comme artefact
     - name: Upload Docker image as artifact
       uses: actions/upload-artifact@v4
       with:
@@ -71,7 +83,7 @@ jobs:
     - name: Deploy to Dev environment
       run: |
         echo "Déploiement sur l'environnement de développement"
-        # Ajouter ici les commandes de déploiement sur l'environnement de développement
+        # Ajouter ici les commandes de déploiement spécifiques au dev
 
   deploy-staging:
     needs: deploy-dev
@@ -92,11 +104,13 @@ jobs:
     - name: Configure kubectl
       run: |
         echo "Configuration de kubectl pour accéder au cluster Kubernetes"
+        # Ajouter la configuration nécessaire pour le cluster Kubernetes
 
     # Déploiement sur l'environnement de staging
     - name: Deploy to Staging environment
       run: |
         echo "Déploiement sur l'environnement de staging (K8s)"
+        # Ajouter les commandes pour le déploiement sur l'environnement staging
 
   deploy-prod:
     needs: deploy-staging
@@ -111,3 +125,4 @@ jobs:
     - name: Deploy to Production environment
       run: |
         echo "Déploiement sur l'environnement de production"
+        # Ajouter les commandes spécifiques pour le déploiement en production

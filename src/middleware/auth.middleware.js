@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 
+// Middleware pour vérifier l'authentification
 export const verifierAuth = (req, res, next) => {
   // Récupérer le token du header Authorization
   const authHeader = req.headers.authorization
@@ -17,11 +18,13 @@ export const verifierAuth = (req, res, next) => {
     req.utilisateur = decoded
 
     next()
-  } catch (error) {
+  } catch {
+    // Pas besoin de capturer l'erreur si vous ne l'utilisez pas
     return res.status(401).json({ message: "Token invalide ou expiré." })
   }
 }
 
+// Middleware pour vérifier le rôle de l'utilisateur
 export const verifierRole = (roles) => {
   return (req, res, next) => {
     if (!req.utilisateur) {
@@ -35,4 +38,3 @@ export const verifierRole = (roles) => {
     next()
   }
 }
-

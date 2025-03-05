@@ -1,6 +1,5 @@
 import Classe from "../models/Classe.js";
 import Etudiant from "../models/Etudiant.js";
-import Professeur from "../models/Professeur.js";
 import { validationResult } from "express-validator";
 
 // Récupérer toutes les classes avec les détails des relations

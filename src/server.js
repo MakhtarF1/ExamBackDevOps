@@ -121,7 +121,7 @@ app.use((req, res) => {
 });
 
 // Middleware pour gérer les erreurs
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   logger.error(`Erreur: ${err.message}`);
   res.status(err.status || 500).json({
     message: err.message || 'Une erreur est survenue sur le serveur',
@@ -155,4 +155,3 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export { app, connectDB };
-
